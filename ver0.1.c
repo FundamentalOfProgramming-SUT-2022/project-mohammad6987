@@ -24,10 +24,16 @@ char replacename[]="replace";
 char exi[]="exit";
 char grep_lname[]="grep_l";
 char undoname[]="undo";
-char auto_indentname[]="auto_indent";
+char text_compare[]="text_compare";
 char clipboard[1000]={0};
 int len=strlen(clipboard);
+char lastpop[150];
 
+void restorepop(const char address2[150])
+{
+    strcpy(lastpop,address2);
+    return;
+}
 
 int countchar(char *str, char x)
 {
@@ -438,7 +444,8 @@ int find(char str[1000])//8
   char needle[100]={0};
   char aux[900]={0};
   FILE *f;
-sscanf(str,"find --str %[^'--'] --file %[^'--']")
+  int line_number=1;
+sscanf(str,"find --str %[^'--'] --file %[^'--']--%[^'--']--%[^'--']--%[^'--']",needle,filename)
     strcpy(address2,filename);
   slashchange(address2);
     int g =checkaddress(address2);
@@ -450,18 +457,24 @@ sscanf(str,"find --str %[^'--'] --file %[^'--']")
     
      f=fopen(address2,"w+");
      fputs(aux,f);
-     fclose(f);
+     
      char *found_string = strstr(aux,needle);
     if (found_string == NULL)
     {
         printf ("Substring not found in the string");
         return -1;
     } 
-    
-    
+    while (fgets(string, sizeof string, in_file)) {
+        if (strstr(string, student)) {
+            return line_number;
+        }
+        if (strchr(string, '\n')) {
+            line_number += 1;
+        }
+    fclose(f);
 }
 
-int strpos(char *hay, char *needle, int offset)
+/*int strpos(char *hay, char *needle, int offset)
 {
    char haystack[strlen(hay)];
    strncpy(haystack, hay+offset, strlen(hay)-offset);
@@ -469,33 +482,76 @@ int strpos(char *hay, char *needle, int offset)
    if (p)
       return p - haystack+offset;
    return -1;
-}
-/*
+}*/
+
 void replace(char str[1000])//9
 {
 
 }
 void grep(char str[1000])//10
 {
+  char pattern[60]={0};
+  char code[5]="grep ";
+  FILE *l;
+   sscanf(str,"grep--str %[^'--']--files %[^'\n']",pattern,files);
+     strcat(code,pattern);
+     strcat(code," ");
+     strcat(code,files);
+     l=popen(code,"r");
 
 }
 int grep_c(char str[1000])//11
 {
-
+   char pattern[60]={0};
+  char code[5]="grep_c ";
+  FILE *l;
+   sscanf(str,"grep_c--str %[^'--']--files %[^'\n']",pattern,files);
+     strcat(code,pattern);
+     strcat(code," ");
+     strcat(code,files);
+     l=popen(code,"r");
 }
 int grep_l(char str[1000])//12
 {
+   char pattern[60]={0};
+  char code[5]="grep_l ";
+  FILE *l;
+   sscanf(str,"grep_l--str %[^'--']--files %[^'\n']",pattern,files);
+     strcat(code,pattern);
+     strcat(code," ");
+     strcat(code,files);
+     l=popen(code,"r");
 
 }
 void undo()//13
 {
+//backup(address2)
 
 }
-void backup()//14
+void backup(char address2[150])//14
 {
+     char ch;// source_file[20], target_file[20];
+   FILE *source, *target;
+   char target_file[]="C:/Users/zare8/Desktop/temp.txt";
+   slashchange(target_file);
+   slashchange(address2);
+   source = fopen(address2, "r");
+   target = fopen(target_file, "w"); 
+   while ((ch = fgetc(source)) != EOF)
+      fputc(ch, target);
+   fclose(source);
+   fclose(target);
 
 }
-*/
+
+void text_compare(char str[1000])
+{
+  char file1[60];
+  char file2[60];
+  sscanf(str,"compare--%[^'\0'] %[^'\0']");
+  
+}
+
 void tree(char str[1000])//16
 {
    int depth;
@@ -548,7 +604,9 @@ int main()
    else if(strcmp(function_name,grep_lname)==0) //+
      grep_l(str); 
    else if(strcmp(function_name,undoname)==0) //
-     nudo();
+     undo();
+   else if(strcmp(function_name,text_compare)==0) 
+     text_compare(str);
     else if(strcmp(function_name,exi)==0)//++
     {
       break;
